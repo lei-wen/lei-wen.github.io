@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    
+    <title>iOS中对时间的理解 | 静谧的夜空</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="经常出现的8小时在代码中写到关于时间的问题时经常遇到一个惹人烦的8小时问题，这个就是因为我们是在东八区 ，而有时候后端返给我们的时间是零时区的时间，东八区比零时区要早8小时，比如现在东八区是中午十二点，零时区就是凌晨四点，那么我们就需要把零时区的时间转化为东八区的时间。首先看一个例子，获取当前时间字符串： 1234567//通过[NSDate date]返回的一定是零时区的时间NSDate *da">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS中对时间的理解">
+<meta property="og:url" content="http://lei-wen.cn/2019/02/27/iOS中对时间的理解/index.html">
+<meta property="og:site_name" content="静谧的夜空">
+<meta property="og:description" content="经常出现的8小时在代码中写到关于时间的问题时经常遇到一个惹人烦的8小时问题，这个就是因为我们是在东八区 ，而有时候后端返给我们的时间是零时区的时间，东八区比零时区要早8小时，比如现在东八区是中午十二点，零时区就是凌晨四点，那么我们就需要把零时区的时间转化为东八区的时间。首先看一个例子，获取当前时间字符串： 1234567//通过[NSDate date]返回的一定是零时区的时间NSDate *da">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://lei-wen.cn/images/3.jpg">
+<meta property="og:updated_time" content="2019-02-26T19:54:59.349Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS中对时间的理解">
+<meta name="twitter:description" content="经常出现的8小时在代码中写到关于时间的问题时经常遇到一个惹人烦的8小时问题，这个就是因为我们是在东八区 ，而有时候后端返给我们的时间是零时区的时间，东八区比零时区要早8小时，比如现在东八区是中午十二点，零时区就是凌晨四点，那么我们就需要把零时区的时间转化为东八区的时间。首先看一个例子，获取当前时间字符串： 1234567//通过[NSDate date]返回的一定是零时区的时间NSDate *da">
+<meta name="twitter:image" content="http://lei-wen.cn/images/3.jpg">
+    
+
+    
+
+    
+        <link rel="icon" href="/css/images/logo.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+</html>
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">静谧的夜空</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://github.com/lei-wen/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar.png">
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://github.com/lei-wen/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search">
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar.png">
+            <h2 id="name">lei-wen</h2>
+            <h3 id="title">iOS Developer &amp; Speculators</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>SuZhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/lei-wen/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                14
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                9
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/lei-wen/" target="_blank" title="github" class="tooltip">
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://twitter.com/ICANDOITHOHO" target="_blank" title="twitter" class="tooltip">
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="http://weibo.com/justlovemarlboro/" target="_blank" title="weibo" class="tooltip">
+                            <i class="fa fa-weibo"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-iOS中对时间的理解" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+	
+		<img src="/images/3.jpg" class="article-banner">
+	
+
+
+
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            iOS中对时间的理解
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2019/02/27/iOS中对时间的理解/">
+            <time datetime="2019-02-26T19:04:33.000Z" itemprop="datePublished">2019-02-27</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/iOS/">iOS</a>
+    </div>
+
+                        
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+        
+            
+        
+        
+            <h2 id="经常出现的8小时"><a href="#经常出现的8小时" class="headerlink" title="经常出现的8小时"></a>经常出现的8小时</h2><p>在代码中写到关于时间的问题时经常遇到一个惹人烦的8小时问题，这个就是因为我们是在东八区 ，而有时候后端返给我们的时间是零时区的时间，东八区比零时区要早8小时，比如现在东八区是中午十二点，零时区就是凌晨四点，那么我们就需要把零时区的时间转化为东八区的时间。<br>首先看一个例子，获取当前时间字符串：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//通过[NSDate date]返回的一定是零时区的时间NSDate *date = [NSDate date];</span></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"date时间 = %@"</span>, date);</span><br><span class="line"><span class="comment">//如果没有规定formatter的时区，那么formatter默认的就是当前时区，比如现在在北京就是东八区，在东京就是东九区</span></span><br><span class="line"><span class="built_in">NSDateFormatter</span> *formatter = [[<span class="built_in">NSDateFormatter</span> alloc] init];</span><br><span class="line"><span class="comment">//最结尾的Z表示的是时区，零时区表示+0000，东八区表示+0800[formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss Z"];</span></span><br><span class="line"><span class="comment">//使用formatter转换后的date字符串变成了当前时区的时间NSString *dateStr = [formatter stringFromDate:date];</span></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"字符串时间 = %@"</span>, dateStr);</span><br></pre></td></tr></table></figure>
+<p>输出:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">2018-05-31 14:43:07.011223+0800 TimeDemo[4674:167771] date时间 = 2018-05-31 06:43:07 +0000</span><br><span class="line">2018-05-31 14:43:07.011777+0800 TimeDemo[4674:167771] 字符串时间 = 2018-05-31 14:43:07 +080</span><br></pre></td></tr></table></figure></p>
+<p>很重要的一点就是，<strong>[NSDate date]返回的是零时区的时间！返回的是零时区的时间！返回的是零时区的时间！</strong></p>
+<p>打印结果前面的时间是北京时间，为2018-05-31 14:43:07.011223，而通过[NSDate date]得到的时间是2018-05-31 06:43:07 +0000，后面的+0000就表示了这个时间是零时区的时间，这个时间对应的东八区的时间就是2018-05-31 14:43:07.011223 +0800了。这两个时间是同一个时间，只不过时区不一样。</p>
+<p>formatter在不特意设置时区的情况下，默认时区是当前地区的时区，比如我们如果在中国，当前时区就是东八区，我们如果把手机拿到东京，当前时区就是东九区。经过formatter转化为时间字符串后时间就变成了当前时区也就是东八区的时间2018-05-31 14:43:07 +080，也就没有了8小时的误差。</p>
+<h3 id="转字符串时间的时区设置"><a href="#转字符串时间的时区设置" class="headerlink" title="转字符串时间的时区设置"></a>转字符串时间的时区设置</h3><p>上面例子中NSDate时间转字符串时间时，NSDateFormatter并没有设置时区，而是使用当前地区的时区，这和设置系统系统时区formatter.timeZone = [NSTimeZone systemTimeZone]的效果是一样的。我们也可以规定一定使用某一个时区:</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSDate</span> *date = [<span class="built_in">NSDate</span> date];    </span><br><span class="line"><span class="built_in">NSDateFormatter</span> *formatter = [[<span class="built_in">NSDateFormatter</span> alloc] init];</span><br><span class="line">[formatter setDateFormat:<span class="string">@"yyyy-MM-dd HH:mm:ss"</span>];    </span><br><span class="line">formatter.timeZone = [<span class="built_in">NSTimeZone</span> timeZoneWithName:<span class="string">@"Asia/Shanghai"</span>];  <span class="comment">//东八区时间</span></span><br><span class="line"><span class="built_in">NSString</span> *dateStr = [formatter stringFromDate:date];    </span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"字符串时间 = %@"</span>, dateStr);</span><br></pre></td></tr></table></figure>
+<p>这样不管我们的手机是在哪里，打印出来的时间都是东八区的时间。<br>还有如下的时区指定:<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">formatter.timeZone = [<span class="built_in">NSTimeZone</span> timeZoneWithName:<span class="string">@"Asia/Tokyo"</span>];</span><br><span class="line"><span class="comment">//东九区时间formatter.timeZone = [NSTimeZone timeZoneWithName:@"GMT"];</span></span><br><span class="line"><span class="comment">//零区时间formatter.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];</span></span><br><span class="line"><span class="comment">//零区时间，和GMT一样</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="字符串时间转NSDate"><a href="#字符串时间转NSDate" class="headerlink" title="字符串时间转NSDate"></a>字符串时间转NSDate</h3><p>字符串时间转NSDate也会有时间问题，看下面的例子:<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSDateFormatter</span> *formatter = [[<span class="built_in">NSDateFormatter</span> alloc] init];</span><br><span class="line">[formatter setDateFormat:<span class="string">@"yyyy-MM-dd HH:mm:ss Z"</span>];    </span><br><span class="line"><span class="built_in">NSDate</span> *newDate = [formatter dateFromString:<span class="string">@"2016-12-07 14:06:24 +0800"</span>];    </span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"newDate = %@"</span>, newDate);</span><br></pre></td></tr></table></figure></p>
+<p>打印结果:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2018-05-31 15:22:11.878915+0800 TimeDemo[5236:189492] newDate = 2016-12-07 06:06:24 +0000</span><br></pre></td></tr></table></figure></p>
+<p>我们看到这样转化后就出现了问题转后之后得到的时间的时区又变成了零时区。<strong>问题就在于，凡是返回结果为NSDate类型的，得到的时间都是零时区，都是零时区！都是零时区！</strong><br>如果上面给出的字符串时间是@”2016-12-07 14:06:24 +0000”，也就是这个时间字符串的时区是零时区，那么得到的结果就不会有变化。<br>NSDateFormatter的格式为@”yyyy-MM-dd HH:mm:ss Z”，这里面的Z表示的就是时区，我们在传递时间字符串的时候也要按照这个规则在时间后面加上+0800或者+0000这样表示时区的。<br>当不指定字符串的时区时，即NSDateFormatter的格式为@”yyyy-MM-dd HH:mm:ss”，这样传递进来的字符串的时区默认为当前时区，转化为NSDate是零时区时间。</p>
+<h3 id="当前时间转时间戳"><a href="#当前时间转时间戳" class="headerlink" title="当前时间转时间戳"></a>当前时间转时间戳</h3><p>时间戳是指1970年1月1日0时0分0秒到当前时间的秒数。注意这里的当前时间是指零时区的NSDate时间。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSDate</span> *date = [<span class="built_in">NSDate</span> date];</span><br><span class="line"><span class="built_in">NSTimeInterval</span> timeIn = [date timeIntervalSince1970];</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"时间戳 = %.0f"</span>, timeIn);</span><br></pre></td></tr></table></figure>
+<p>打印结果:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2018-05-31 15:49:48.165702+0800 TimeDemo[5635:205558] 时间戳 = 1527752988</span><br></pre></td></tr></table></figure></p>
+<h2 id="时间戳和时间字符串的相互转换"><a href="#时间戳和时间字符串的相互转换" class="headerlink" title="时间戳和时间字符串的相互转换"></a>时间戳和时间字符串的相互转换</h2><h3 id="时间戳转时间字符串"><a href="#时间戳转时间字符串" class="headerlink" title="时间戳转时间字符串"></a>时间戳转时间字符串</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">NSString</span> *)convertToTimeStringWithTimeInterval:(<span class="built_in">NSTimeInterval</span>)timeInterval &#123;    </span><br><span class="line">    <span class="built_in">NSDate</span> *date = [<span class="built_in">NSDate</span> dateWithTimeIntervalSince1970:timeInterval];    </span><br><span class="line">    <span class="built_in">NSDateFormatter</span> *dateFormatter = [[<span class="built_in">NSDateFormatter</span> alloc] init];</span><br><span class="line">    [dateFormatter setDateFormat:<span class="string">@"yyyy-MM-dd HH:mm:ss Z"</span>];    </span><br><span class="line">    <span class="built_in">NSString</span> *dateStsring = [dateFormatter stringFromDate:date];    </span><br><span class="line">    <span class="keyword">return</span> dateStsring;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="时间字符串转时间戳"><a href="#时间字符串转时间戳" class="headerlink" title="时间字符串转时间戳"></a>时间字符串转时间戳</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">NSTimeInterval</span>)convertToTimeIntervalWithTimeString:(<span class="built_in">NSString</span> *)timeString &#123;    </span><br><span class="line">    <span class="built_in">NSDateFormatter</span> *dateFormatter = [[<span class="built_in">NSDateFormatter</span> alloc] init];</span><br><span class="line">    [dateFormatter setDateFormat:<span class="string">@"yyyy-MM-dd HH:mm:ss Z"</span>];    </span><br><span class="line">    <span class="built_in">NSDate</span> *date = [dateFormatter dateFromString:timeString];    </span><br><span class="line">    <span class="built_in">NSTimeInterval</span> timeInterval = [date timeIntervalSince1970];    </span><br><span class="line">    <span class="keyword">return</span> timeInterval;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<p>END</p>
+<p>Author: lei-wen<br>FinishTime: 2019.02.27</p>
+
+            </div>
+        
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://lei-wen.cn/2019/02/27/iOS中对时间的理解/" data-id="cjuikurx90005x599a2zunwp1" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://lei-wen.cn/2019/02/27/iOS中对时间的理解/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lei-wen.cn/2019/02/27/iOS中对时间的理解/">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2019/02/27/你见过哪些有趣的代码注释？/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    你见过哪些有趣的代码注释？
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/07/06/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">Hello World</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+</section>
+    
+
+
+
+
+<!-- baidu url auto push script -->
+<script type="text/javascript">
+    !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=window.location.href,o=document.referrer;if(!e.test(r)){var n="//api.share.baidu.com/s.gif";o?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var t=new Image;t.src=n}}(window);
+</script>     
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/04/10/iOS的主要框架介绍/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/15.jpg)" alt="iOS的主要框架介绍" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a></p>
+                            <p class="item-title"><a href="/2019/04/10/iOS的主要框架介绍/" class="title">iOS的主要框架介绍</a></p>
+                            <p class="item-date"><time datetime="2019-04-09T17:42:47.000Z" itemprop="datePublished">2019-04-10</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/03/29/常用Git命令/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/13.jpg)" alt="常用Git命令" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Git/">Git</a></p>
+                            <p class="item-title"><a href="/2019/03/29/常用Git命令/" class="title">常用Git命令</a></p>
+                            <p class="item-date"><time datetime="2019-03-28T17:53:18.000Z" itemprop="datePublished">2019-03-29</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/03/29/MleaksFinder-精准iOS内存泄漏检测工具/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/12.jpg)" alt="MLeaksFinder:精准iOS内存泄漏检测工具" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a></p>
+                            <p class="item-title"><a href="/2019/03/29/MleaksFinder-精准iOS内存泄漏检测工具/" class="title">MLeaksFinder:精准iOS内存泄漏检测工具</a></p>
+                            <p class="item-date"><time datetime="2019-03-28T17:20:43.000Z" itemprop="datePublished">2019-03-29</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/03/27/如何优化App的启动耗时？/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/11.jpg)" alt="如何优化App的启动耗时？" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a></p>
+                            <p class="item-title"><a href="/2019/03/27/如何优化App的启动耗时？/" class="title">如何优化App的启动耗时？</a></p>
+                            <p class="item-date"><time datetime="2019-03-27T13:21:00.000Z" itemprop="datePublished">2019-03-27</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/03/27/深入研究Block捕获外部变量和-block实现原理/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/10.jpg)" alt="深入研究Block捕获外部变量和__block实现原理" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a></p>
+                            <p class="item-title"><a href="/2019/03/27/深入研究Block捕获外部变量和-block实现原理/" class="title">深入研究Block捕获外部变量和__block实现原理</a></p>
+                            <p class="item-date"><time datetime="2019-03-27T11:04:19.000Z" itemprop="datePublished">2019-03-27</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Git/">Git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Hexo/">Hexo</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/代码块/">代码块</a><span class="category-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Block/">Block</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/">HTTP</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Memory/">Memory</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Objective-C/">Objective-C</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Request/">Request</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/View/">View</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存检测/">内存检测</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能优化/">性能优化</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/版本控制/">版本控制</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Block/" style="font-size: 10px;">Block</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/Memory/" style="font-size: 10px;">Memory</a> <a href="/tags/Objective-C/" style="font-size: 20px;">Objective-C</a> <a href="/tags/Request/" style="font-size: 10px;">Request</a> <a href="/tags/View/" style="font-size: 10px;">View</a> <a href="/tags/内存检测/" style="font-size: 10px;">内存检测</a> <a href="/tags/性能优化/" style="font-size: 15px;">性能优化</a> <a href="/tags/版本控制/" style="font-size: 10px;">版本控制</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2019 lei-wen<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/lei-wen">lei-wen</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'http://lei-wen.cn/2019/02/27/iOS中对时间的理解/';
+        
+        this.page.identifier = 'iOS中对时间的理解';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

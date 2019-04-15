@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    
+    <title>iOS应用程序启动时所有方法的调用顺序 | 静谧的夜空</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="一个应用程序的启动过程要包括代理的创建，控制器的加载和控制器view的加载，这其中有很多关于生命周期的方法，每个方法都是有先后顺序的，如果调用顺序拿不准，或者某段代码写的方法不恰当，就会遇到各种奇葩问题。 首先看一下应用程序的启动过程： 先加载Main函数.  在Main函数里的 UIApplicationMain方法中，创建Application对象创建Application的Delegate对">
+<meta name="keywords" content="Objective-C">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS应用程序启动时所有方法的调用顺序">
+<meta property="og:url" content="http://lei-wen.cn/2019/03/05/iOS应用程序启动时所有方法的调用顺序/index.html">
+<meta property="og:site_name" content="静谧的夜空">
+<meta property="og:description" content="一个应用程序的启动过程要包括代理的创建，控制器的加载和控制器view的加载，这其中有很多关于生命周期的方法，每个方法都是有先后顺序的，如果调用顺序拿不准，或者某段代码写的方法不恰当，就会遇到各种奇葩问题。 首先看一下应用程序的启动过程： 先加载Main函数.  在Main函数里的 UIApplicationMain方法中，创建Application对象创建Application的Delegate对">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://lei-wen.cn/images/6.jpg">
+<meta property="og:updated_time" content="2019-03-06T17:06:14.933Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS应用程序启动时所有方法的调用顺序">
+<meta name="twitter:description" content="一个应用程序的启动过程要包括代理的创建，控制器的加载和控制器view的加载，这其中有很多关于生命周期的方法，每个方法都是有先后顺序的，如果调用顺序拿不准，或者某段代码写的方法不恰当，就会遇到各种奇葩问题。 首先看一下应用程序的启动过程： 先加载Main函数.  在Main函数里的 UIApplicationMain方法中，创建Application对象创建Application的Delegate对">
+<meta name="twitter:image" content="http://lei-wen.cn/images/6.jpg">
+    
+
+    
+
+    
+        <link rel="icon" href="/css/images/logo.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+</html>
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">静谧的夜空</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://github.com/lei-wen/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar.png">
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://github.com/lei-wen/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search">
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar.png">
+            <h2 id="name">lei-wen</h2>
+            <h3 id="title">iOS Developer &amp; Speculators</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>SuZhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/lei-wen/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                14
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                9
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/lei-wen/" target="_blank" title="github" class="tooltip">
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://twitter.com/ICANDOITHOHO" target="_blank" title="twitter" class="tooltip">
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="http://weibo.com/justlovemarlboro/" target="_blank" title="weibo" class="tooltip">
+                            <i class="fa fa-weibo"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-iOS应用程序启动时所有方法的调用顺序" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+	
+		<img src="/images/6.jpg" class="article-banner">
+	
+
+
+
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            iOS应用程序启动时所有方法的调用顺序
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2019/03/05/iOS应用程序启动时所有方法的调用顺序/">
+            <time datetime="2019-03-04T22:10:34.000Z" itemprop="datePublished">2019-03-05</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/iOS/">iOS</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Objective-C/">Objective-C</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+        
+            
+        
+        
+            <p>一个应用程序的启动过程要包括代理的创建，控制器的加载和控制器view的加载，这其中有很多关于生命周期的方法，每个方法都是有先后顺序的，如果调用顺序拿不准，或者某段代码写的方法不恰当，就会遇到各种奇葩问题。</p>
+<h2 id="首先看一下应用程序的启动过程："><a href="#首先看一下应用程序的启动过程：" class="headerlink" title="首先看一下应用程序的启动过程："></a><font color="#03a8e5">首先看一下应用程序的启动过程：</font><br></h2><ol>
+<li><p>先加载Main函数.</p>
+</li>
+<li><p>在Main函数里的 UIApplicationMain方法中，创建Application对象创建Application的Delegate对象.</p>
+</li>
+<li><p>创建主循环，代理对象开始监听事件.</p>
+</li>
+<li><p>启动完毕会调用 didFinishLaunching方法，并在这个方法中创建UIWindow.</p>
+</li>
+<li><p>设置UIWindow的根控制器是谁.</p>
+</li>
+<li><p>如果有storyboard，会根据info.plist中找到应用程序的入口storyboard并加载箭头所指的控制器.</p>
+</li>
+<li><p>显示窗口.</p>
+</li>
+</ol>
+<p>本文考虑的是步骤3之后到步骤7结束时将要调用的方法<br>其中有AppDelegate, ViewController, MainView（控制器的View）, ChildView（子控件的View）的18个方法</p>
+<p><strong>AppDelegate中的:</strong></p>
+<p><strong>1. application:didFinishLaunchingWithOptions:</strong><br><strong>2. applicationDidBecomeActive:</strong></p>
+<p><strong>ViewController中的:</strong></p>
+<p><strong>3. loadView</strong><br><strong>4. viewDidLoad</strong><br><strong>5. load</strong><br><strong>6. initialize</strong><br><strong>7. viewWillAppear</strong><br><strong>8. viewWillLayoutSubviews</strong><br><strong>9. viewDidLayoutSubviews</strong><br><strong>10. viewDidAppear</strong></p>
+<p><strong>MainView（控制器的View）中的:</strong></p>
+<p><strong>11. initWithCoder（如果没有storyboard就会调用initWithFrame，这里两种方法视为一种）</strong><br><strong>12. awakeFromNib</strong><br><strong>13. layoutSubviews</strong><br><strong>14. drawRect</strong></p>
+<p><strong>ChildView（子控件View）中的:</strong></p>
+<p><strong>15. initWithCoder（如果没有storyboard就会调用initWithFrame，这里两种方法视为一种）</strong><br><strong>16. awakeFromNib</strong><br><strong>17. layoutSubviews</strong><br><strong>18. drawRect</strong></p>
+<p>执行顺序如下:</p>
+<h3 id="1-void-load"><a href="#1-void-load" class="headerlink" title="1. + (void)load;"></a>1. + (void)load;</h3><p>这是应用程序启动就会调用的方法，在这个方法里写的代码最先调用.</p>
+<h3 id="2-void-initialize"><a href="#2-void-initialize" class="headerlink" title="2. + (void)initialize;"></a>2. + (void)initialize;</h3><p>这个是需要用到本类时才调用，这个方法里一般写设置导航控制器的主题啊之类的，如果在后面的方法设置导航栏主题就晚了！（当然在上面的方法里也能写）.</p>
+<h3 id="3-BOOL-application-UIApplication-application-didFinishLaunchingWithOptions-NSDictionary-launchOptions"><a href="#3-BOOL-application-UIApplication-application-didFinishLaunchingWithOptions-NSDictionary-launchOptions" class="headerlink" title="3. - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;"></a>3. - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;</h3><p>这个方法里面会创建UIWindow，设置根控制器并展现，比如某些应用程序要加载授权页面也是在这加，也可以设置观察者，监听到通知切换根控制器.</p>
+<h3 id="4-ChildView-instancetype-initWithCoder-NSCoder-aDecoder"><a href="#4-ChildView-instancetype-initWithCoder-NSCoder-aDecoder" class="headerlink" title="4. ChildView - (instancetype)initWithCoder:(NSCoder *)aDecoder;"></a>4. ChildView - (instancetype)initWithCoder:(NSCoder *)aDecoder;</h3><p>这里是万万没想到，childView的initwithcoder会在MainView的方法之前调用.</p>
+<h3 id="5-MainView-instancetype-initWithCoder-NSCoder-aDecoder"><a href="#5-MainView-instancetype-initWithCoder-NSCoder-aDecoder" class="headerlink" title="5. MainView - (instancetype)initWithCoder:(NSCoder *)aDecoder;"></a>5. MainView - (instancetype)initWithCoder:(NSCoder *)aDecoder;</h3><p>父类view的initwithCoder.</p>
+<h3 id="6-MainView-void-awakeFromNib"><a href="#6-MainView-void-awakeFromNib" class="headerlink" title="6. MainView - (void)awakeFromNib;"></a>6. MainView - (void)awakeFromNib;</h3><p>在这个方法里设置view的背景等一系列普通操作，不要写关于frame的还不准，在使用IB的时候才会涉及到此方法的使用，当.nib文件被加载的时候，会发送一个awakeFromNib的消息到.nib文件中的每个对象，每个对象都可以定义自己的awakeFromNib函数来响应这个消息，执行一些必要的操作. </p>
+<h3 id="7-ChildView-void-awakeFromNib"><a href="#7-ChildView-void-awakeFromNib" class="headerlink" title="7. ChildView - (void)awakeFromNib"></a>7. ChildView - (void)awakeFromNib</h3><p>子控件也有本方法，重写父类的方法。基本用法同上.</p>
+<h3 id="8-void-loadView"><a href="#8-void-loadView" class="headerlink" title="8. - (void)loadView;"></a>8. - (void)loadView;</h3><p>创建视图的层次结构，这里需要注意，在没有创建控制器的view的情况下不能直接写 self.view 因为self.view的底层是：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>（_view == <span class="literal">nil</span>）&#123;</span><br><span class="line">　　_view = [<span class="keyword">self</span> loadView];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>所以这么写会直接造成死循环。<br>如果重写这个loadView方法里面什么都不写，会显示黑屏。<br>如果写了[super view]还要看前面的控制器在创建时是写的initWithNibName（指定了xib名字），还是写的普通的init。如果是后者还是黑屏。如果不在这个方法中，init的底层是会调用initWithNibName的，如果名字是MainViewController，会先在项目中找MainView.xib 找不到会再找MainViewController.xib。 </p>
+<h3 id="9-void-viewDidLoad"><a href="#9-void-viewDidLoad" class="headerlink" title="9. - (void)viewDidLoad;"></a>9. - (void)viewDidLoad;</h3><p>这里只是把视图元件加载完成，还没有开始布局不要设置关于 frame 之类的属性！有时可能会出现差20个像素点等状况。</p>
+<h3 id="10-void-viewWillAppear-BOOL-animated"><a href="#10-void-viewWillAppear-BOOL-animated" class="headerlink" title="10. - (void)viewWillAppear:(BOOL)animated;"></a>10. - (void)viewWillAppear:(BOOL)animated;</h3><p>视图将要出现，这个方法用的非常多，比如如果要设置导航栏的setNavigationBarHiden:animate: 就必须要在这里写，才能完美契合，不卡跳。 还有很多比如监听屏幕旋转啦，<br>viewWillTransitionToSize:可能要在本方法里再调一次，或者就是新到这个界面要reloadData或是自动下拉刷新等 都是写在本方法里。</p>
+<h3 id="11-void-viewWillLayoutSubviews"><a href="#11-void-viewWillLayoutSubviews" class="headerlink" title="11. - (void)viewWillLayoutSubviews;"></a>11. - (void)viewWillLayoutSubviews;</h3><p>视图将要布局子视图，苹果建议的设置界面布局属性的方法，这个方法和viewWillAppear里，系统的底层都是没有写任何代码的，也就是说这里面不写super也是可以的.</p>
+<h3 id="12-MainView-void-layoutSubviews"><a href="#12-MainView-void-layoutSubviews" class="headerlink" title="12. MainView - (void)layoutSubviews;"></a>12. MainView - (void)layoutSubviews;</h3><p>在这个方法里一般设置子控件的frame，因为这里相当于是布局基本完成了，设置时取到的frame或者是self.bounds才最准，如果在awakeFromeNib里写会不准确 。还有这里要切记千万不能把super layoutSubviews忘了，可能最后都很难找到这个BUG.</p>
+<h3 id="13-void-viewDidLayoutSubviews"><a href="#13-void-viewDidLayoutSubviews" class="headerlink" title="13. - (void)viewDidLayoutSubviews;"></a>13. - (void)viewDidLayoutSubviews;</h3><p>这个方法是没想到的，控制器的view的子控件还没有布局好呢，怎么这个控制器就已经说布局全部完成了？</p>
+<h3 id="14-ChildView-void-layoutSubviews"><a href="#14-ChildView-void-layoutSubviews" class="headerlink" title="14. ChildView - (void)layoutSubviews;"></a>14. ChildView - (void)layoutSubviews;</h3><p>控制器的子控件里的子控件的布局就在这里写.</p>
+<h3 id="15-MainView-void-drawRect-CGRect-rect"><a href="#15-MainView-void-drawRect-CGRect-rect" class="headerlink" title="15. MainView - (void)drawRect:(CGRect)rect;"></a>15. MainView - (void)drawRect:(CGRect)rect;</h3><p>因为默认所有额UI控件都是画上去的，在这一步就是把所有的东西画上去，有时候需要用到Quartz2D的知识的时候都是在这个方法里话，但也是要注意别忘了写super，不然系统原本的东西就都画不上来了，这里要建议尽可能使用贝塞尔路径画图形，因为系统默认的那个上下文画法有时可能会内存泄露。drawRect方法只能在加载时调用一次，如果后面还需要调用，比如下载进度的圆弧，需要一直刷帧，就要使用setNeedsDisplay来定时多次调用本方法.</p>
+<h3 id="16-ChildView-void-drawRect-CGRect-rect"><a href="#16-ChildView-void-drawRect-CGRect-rect" class="headerlink" title="16. ChildView - (void)drawRect:(CGRect)rect;"></a>16. ChildView - (void)drawRect:(CGRect)rect;</h3><p>view的子控件内部的画图方法，有时可以自己自定义label 中间带个删除线的（用来写打折前的原价） 就是在这里画根线.</p>
+<h3 id="17-void-viewDidAppear-BOOL-animated"><a href="#17-void-viewDidAppear-BOOL-animated" class="headerlink" title="17. - (void)viewDidAppear:(BOOL)animated;"></a>17. - (void)viewDidAppear:(BOOL)animated;</h3><p>把上面的画图都画完了，这里就会显示，视图完全加载完成。在这里的操作可能就是设置页面的一些动画,或者是设置tableView，collectionView，QQ聊天页面啥的滚动到底部scrollToIndexPath之类的代码操作.</p>
+<h3 id="18-void-applicationDidBecomeActive-UIApplication-application"><a href="#18-void-applicationDidBecomeActive-UIApplication-application" class="headerlink" title="18. - (void)applicationDidBecomeActive:(UIApplication *)application;"></a>18. - (void)applicationDidBecomeActive:(UIApplication *)application;</h3><p>最后这是AppDelegate的应用程序获取焦点方法，真正到了这里，才是所有东西全部加载完毕，应用程序整装待发保持最佳状态等待用户操作。这个方法中一般会写关于弹出键盘的方法，比如有的用户登录界面为了更好的用户体验，就让你在刚打开程序来到登录界面的时候，光标的焦点就自动在账号的文本框里闪烁，也就是设置账号文本框为第一响应者。键盘在页面加载完毕后从下方弹出，这种代码一般就在本方法写.</p>
+<hr>
+<p>END</p>
+<p>Author: lei-wen<br>FinishTime: 2019.03.05</p>
+
+            </div>
+        
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://lei-wen.cn/2019/03/05/iOS应用程序启动时所有方法的调用顺序/" data-id="cjuikurxa0006x599vg781rf1" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://lei-wen.cn/2019/03/05/iOS应用程序启动时所有方法的调用顺序/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lei-wen.cn/2019/03/05/iOS应用程序启动时所有方法的调用顺序/">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2019/03/06/loadView、viewDidLoad以及viewDidUnload的关系/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    loadView、viewDidLoad以及viewDidUnload的关系
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2019/03/05/NSObject中的load和initialize方法/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">NSObject中的load和initialize方法</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+</section>
+    
+
+
+
+
+<!-- baidu url auto push script -->
+<script type="text/javascript">
+    !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=window.location.href,o=document.referrer;if(!e.test(r)){var n="//api.share.baidu.com/s.gif";o?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var t=new Image;t.src=n}}(window);
+</script>     
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/04/10/iOS的主要框架介绍/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/15.jpg)" alt="iOS的主要框架介绍" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a></p>
+                            <p class="item-title"><a href="/2019/04/10/iOS的主要框架介绍/" class="title">iOS的主要框架介绍</a></p>
+                            <p class="item-date"><time datetime="2019-04-09T17:42:47.000Z" itemprop="datePublished">2019-04-10</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/03/29/常用Git命令/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/13.jpg)" alt="常用Git命令" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Git/">Git</a></p>
+                            <p class="item-title"><a href="/2019/03/29/常用Git命令/" class="title">常用Git命令</a></p>
+                            <p class="item-date"><time datetime="2019-03-28T17:53:18.000Z" itemprop="datePublished">2019-03-29</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/03/29/MleaksFinder-精准iOS内存泄漏检测工具/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/12.jpg)" alt="MLeaksFinder:精准iOS内存泄漏检测工具" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a></p>
+                            <p class="item-title"><a href="/2019/03/29/MleaksFinder-精准iOS内存泄漏检测工具/" class="title">MLeaksFinder:精准iOS内存泄漏检测工具</a></p>
+                            <p class="item-date"><time datetime="2019-03-28T17:20:43.000Z" itemprop="datePublished">2019-03-29</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/03/27/如何优化App的启动耗时？/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/11.jpg)" alt="如何优化App的启动耗时？" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a></p>
+                            <p class="item-title"><a href="/2019/03/27/如何优化App的启动耗时？/" class="title">如何优化App的启动耗时？</a></p>
+                            <p class="item-date"><time datetime="2019-03-27T13:21:00.000Z" itemprop="datePublished">2019-03-27</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/03/27/深入研究Block捕获外部变量和-block实现原理/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/10.jpg)" alt="深入研究Block捕获外部变量和__block实现原理" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a></p>
+                            <p class="item-title"><a href="/2019/03/27/深入研究Block捕获外部变量和-block实现原理/" class="title">深入研究Block捕获外部变量和__block实现原理</a></p>
+                            <p class="item-date"><time datetime="2019-03-27T11:04:19.000Z" itemprop="datePublished">2019-03-27</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Git/">Git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Hexo/">Hexo</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/代码块/">代码块</a><span class="category-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Block/">Block</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/">HTTP</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Memory/">Memory</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Objective-C/">Objective-C</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Request/">Request</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/View/">View</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存检测/">内存检测</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能优化/">性能优化</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/版本控制/">版本控制</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Block/" style="font-size: 10px;">Block</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/Memory/" style="font-size: 10px;">Memory</a> <a href="/tags/Objective-C/" style="font-size: 20px;">Objective-C</a> <a href="/tags/Request/" style="font-size: 10px;">Request</a> <a href="/tags/View/" style="font-size: 10px;">View</a> <a href="/tags/内存检测/" style="font-size: 10px;">内存检测</a> <a href="/tags/性能优化/" style="font-size: 15px;">性能优化</a> <a href="/tags/版本控制/" style="font-size: 10px;">版本控制</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2019 lei-wen<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/lei-wen">lei-wen</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'http://lei-wen.cn/2019/03/05/iOS应用程序启动时所有方法的调用顺序/';
+        
+        this.page.identifier = 'iOS应用程序启动时所有方法的调用顺序';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

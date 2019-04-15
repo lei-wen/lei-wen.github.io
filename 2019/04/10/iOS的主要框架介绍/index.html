@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    
+    <title>iOS的主要框架介绍 | 静谧的夜空</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="iOS为应用程序开发提供了许多可使用的框架，并构成IOS操作系统的层次架构，分为四层，从上到下依次为:Cocoa Touch Layer（触摸UI层）、MediaLayer（媒体层）、Core Services Layer（核心服务层）、Core OS Layer（核心OS层）。 在iOS中框架是一个目录，包含了共享资源库，用于访问该资源库中储存的代码的头文件，以及图像、声音文件等其他资源。共享资">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS的主要框架介绍">
+<meta property="og:url" content="http://lei-wen.cn/2019/04/10/iOS的主要框架介绍/index.html">
+<meta property="og:site_name" content="静谧的夜空">
+<meta property="og:description" content="iOS为应用程序开发提供了许多可使用的框架，并构成IOS操作系统的层次架构，分为四层，从上到下依次为:Cocoa Touch Layer（触摸UI层）、MediaLayer（媒体层）、Core Services Layer（核心服务层）、Core OS Layer（核心OS层）。 在iOS中框架是一个目录，包含了共享资源库，用于访问该资源库中储存的代码的头文件，以及图像、声音文件等其他资源。共享资">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://lei-wen.cn/images/15.jpg">
+<meta property="og:updated_time" content="2019-04-10T11:42:42.173Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS的主要框架介绍">
+<meta name="twitter:description" content="iOS为应用程序开发提供了许多可使用的框架，并构成IOS操作系统的层次架构，分为四层，从上到下依次为:Cocoa Touch Layer（触摸UI层）、MediaLayer（媒体层）、Core Services Layer（核心服务层）、Core OS Layer（核心OS层）。 在iOS中框架是一个目录，包含了共享资源库，用于访问该资源库中储存的代码的头文件，以及图像、声音文件等其他资源。共享资">
+<meta name="twitter:image" content="http://lei-wen.cn/images/15.jpg">
+    
+
+    
+
+    
+        <link rel="icon" href="/css/images/logo.png">
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+</html>
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">静谧的夜空</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://github.com/lei-wen/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar.png">
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://github.com/lei-wen/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search">
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar.png">
+            <h2 id="name">lei-wen</h2>
+            <h3 id="title">iOS Developer &amp; Speculators</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>SuZhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/lei-wen/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                14
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                9
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/lei-wen/" target="_blank" title="github" class="tooltip">
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://twitter.com/ICANDOITHOHO" target="_blank" title="twitter" class="tooltip">
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="http://weibo.com/justlovemarlboro/" target="_blank" title="weibo" class="tooltip">
+                            <i class="fa fa-weibo"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-iOS的主要框架介绍" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+            
+	
+		<img src="/images/15.jpg" class="article-banner">
+	
+
+
+
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            iOS的主要框架介绍
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2019/04/10/iOS的主要框架介绍/">
+            <time datetime="2019-04-09T17:42:47.000Z" itemprop="datePublished">2019-04-10</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/iOS/">iOS</a>
+    </div>
+
+                        
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+        
+            
+        
+        
+            <p>iOS为应用程序开发提供了许多可使用的框架，并构成IOS操作系统的层次架构，分为四层，从上到下依次为:Cocoa Touch Layer（触摸UI层）、MediaLayer（媒体层）、Core Services Layer（核心服务层）、Core OS Layer（核心OS层）。</p>
+<p>在iOS中框架是一个目录，包含了共享资源库，用于访问该资源库中储存的代码的头文件，以及图像、声音文件等其他资源。共享资源库定义应用程序可以调用的函数和方法。低层次框架提供IOS的基本服务和技术，高层次框架建立在低层次框架之上用来提供更加复杂的服务和技术，较高级的框架向较低级的结构提供面向对象的抽象。</p>
+<p><strong>iOS中的主要框架如下</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">框架名称</th>
+<th style="text-align:center">所属层级</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Accelerate.framework</td>
+<td style="text-align:center">Core OS</td>
+<td style="text-align:center">包含加速数学和DSP函数</td>
+</tr>
+<tr>
+<td style="text-align:center">Accounts.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">帮助用户访问和管理他们的外部帐户，而不需要他们进入账户的登录认证</td>
+</tr>
+<tr>
+<td style="text-align:center">AddressBook.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">包含直接访问用户联系人数据库的函数</td>
+</tr>
+<tr>
+<td style="text-align:center">AddressBookUI.framework</td>
+<td style="text-align:center">Cocoa Touch</td>
+<td style="text-align:center">包含显示系统定义的联系人挑选界面和编辑界面的类</td>
+</tr>
+<tr>
+<td style="text-align:center">AdSupport.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">访问广告标识符和指示用户是否已选择限制广告跟踪的标记</td>
+</tr>
+<tr>
+<td style="text-align:center">AssetsLibrary.framework</td>
+<td style="text-align:center">Media</td>
+<td style="text-align:center">包含显示用户照片和视频的类</td>
+</tr>
+<tr>
+<td style="text-align:center">AudioToolbox.framework</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">包含处理音频流数据以及播放或录制音频的接口</td>
+</tr>
+<tr>
+<td style="text-align:center">AudioUnit.framework</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">包含加载并使用音频单元的接口</td>
+</tr>
+<tr>
+<td style="text-align:center">AVFoundation.framework</td>
+<td style="text-align:center">Media</td>
+<td style="text-align:center">包含播放或录制音频的Objective-C接口</td>
+</tr>
+<tr>
+<td style="text-align:center">CFNetwork.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">包含通过WiFi或者蜂窝无线访问网络的接口</td>
+</tr>
+<tr>
+<td style="text-align:center">CoreAudio.framework</td>
+<td style="text-align:center">Media</td>
+<td style="text-align:center">包含Core Audio框架使用的各种数据类型</td>
+</tr>
+<tr>
+<td style="text-align:center">CoreBluetooth.framework</td>
+<td style="text-align:center">Core OS</td>
+<td style="text-align:center">与蓝牙4.0低能耗设备通信</td>
+</tr>
+<tr>
+<td style="text-align:center">CoreData.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">包含管理应用程序数据模型的接口</td>
+</tr>
+<tr>
+<td style="text-align:center">CoreFoundation.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">提供一些基本软件服务，包括常见数据类型抽象、字符串实用工具、群体类型实用工具、资源管理以及偏好设置</td>
+</tr>
+<tr>
+<td style="text-align:center">CoreGraphics.framework</td>
+<td style="text-align:center">Media</td>
+<td style="text-align:center">包含Quartz 2D接口</td>
+</tr>
+<tr>
+<td style="text-align:center">CoreImage.framework</td>
+<td style="text-align:center">Media</td>
+<td style="text-align:center">使用内置或自定义过滤器处理静态和视频图像</td>
+</tr>
+<tr>
+<td style="text-align:center">CoreLocation.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">包含确定用户方位信息的接口</td>
+</tr>
+<tr>
+<td style="text-align:center">CoreMedia.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">包含操作音频和视频的底层例程</td>
+</tr>
+<tr>
+<td style="text-align:center">CoreMotion.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">包含访问加速度计以及陀螺仪的数据的接口</td>
+</tr>
+<tr>
+<td style="text-align:center">CoreTelephony.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">包含访问电话相关的信息的例程</td>
+</tr>
+<tr>
+<td style="text-align:center">CoreText.framework</td>
+<td style="text-align:center">Media</td>
+<td style="text-align:center">包含一个文本的布局渲染引擎</td>
+</tr>
+<tr>
+<td style="text-align:center">CoreVideo.framework</td>
+<td style="text-align:center">Media</td>
+<td style="text-align:center">包含操作音频和视频的底层例程</td>
+</tr>
+<tr>
+<td style="text-align:center">EventKit.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">包含访问用户日历事件数据的接口</td>
+</tr>
+<tr>
+<td style="text-align:center">EventKitUI.framework</td>
+<td style="text-align:center">Cocoa Touch</td>
+<td style="text-align:center">包含显示标准系统日历界面的类</td>
+</tr>
+<tr>
+<td style="text-align:center">ExternalAccessory.framework</td>
+<td style="text-align:center">Core OS</td>
+<td style="text-align:center">包含与外设进行通讯的接口</td>
+</tr>
+<tr>
+<td style="text-align:center">Foundation.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">包含Cocoa Foundation层的类和方法</td>
+</tr>
+<tr>
+<td style="text-align:center">GameController.framework</td>
+<td style="text-align:center">Media</td>
+<td style="text-align:center">支持游戏中的硬件游戏控制器</td>
+</tr>
+<tr>
+<td style="text-align:center">GameKit.framework</td>
+<td style="text-align:center">Cocoa Touch</td>
+<td style="text-align:center">包含点对点连接管理接口</td>
+</tr>
+<tr>
+<td style="text-align:center">GLKit.framework</td>
+<td style="text-align:center">Media</td>
+<td style="text-align:center">加速OpenGL ES或OpenGL应用程序开发。使用数学库，背景纹理加载，预先创建的着色器效果以及标准视图和视图控制器来实现渲染循环</td>
+</tr>
+<tr>
+<td style="text-align:center">iAd.framework</td>
+<td style="text-align:center">Cocoa Touch</td>
+<td style="text-align:center">包含在应用程序中显示广告的类</td>
+</tr>
+<tr>
+<td style="text-align:center">ImageIO.framework</td>
+<td style="text-align:center">Media</td>
+<td style="text-align:center">包含读取或写入图像数据的类</td>
+</tr>
+<tr>
+<td style="text-align:center">IOKit.framework</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">包含设备所使用的接口</td>
+</tr>
+<tr>
+<td style="text-align:center">JavaScriptCore.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">包含从应用程序中评估JavaScript程序能力的接口</td>
+</tr>
+<tr>
+<td style="text-align:center">MapKit.framework</td>
+<td style="text-align:center">Cocoa Touch</td>
+<td style="text-align:center">包含将地图界面嵌入到应用程序的类，也可以用于查找地理编码反向坐标</td>
+</tr>
+<tr>
+<td style="text-align:center">MediaAccessibility.framework</td>
+<td style="text-align:center">Media</td>
+<td style="text-align:center">协调应用程序媒体文件的闭路字幕数据的显示</td>
+</tr>
+<tr>
+<td style="text-align:center">MediaPlayer.framework</td>
+<td style="text-align:center">Media</td>
+<td style="text-align:center">包含显示全屏视频的接口</td>
+</tr>
+<tr>
+<td style="text-align:center">MessageUI.framework</td>
+<td style="text-align:center">Cocoa Touch</td>
+<td style="text-align:center">包含撰写和排队发送电子邮件信息的界面</td>
+</tr>
+<tr>
+<td style="text-align:center">MobileCoreServices.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">定义系统支持的统一类型标识符（UTIs）</td>
+</tr>
+<tr>
+<td style="text-align:center">MultipeerConnectivity.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">支持点对点连接和附近设备的发现</td>
+</tr>
+<tr>
+<td style="text-align:center">NewsstandKit.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">为报亭应用的客户端创建和管理资产。通过针对移动设备优化的查看，使用户能够浏览和下载报纸和杂志</td>
+</tr>
+<tr>
+<td style="text-align:center">OpenAL.framework</td>
+<td style="text-align:center">Media</td>
+<td style="text-align:center">包含OpenAL接口。OpenAL是一个跨平台的方位音频库</td>
+</tr>
+<tr>
+<td style="text-align:center">OpenGLES.framework</td>
+<td style="text-align:center">Media</td>
+<td style="text-align:center">包含OpenGL ES接口。OpenGL ES框架是OpenGL跨平台2D和3D渲染库的跨平台版本</td>
+</tr>
+<tr>
+<td style="text-align:center">PassKit.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">在您的应用中请求和处理Apple Pay付款。创建，分发和更新电子钱包应用的通行证</td>
+</tr>
+<tr>
+<td style="text-align:center">QuartzCore.framework</td>
+<td style="text-align:center">Media</td>
+<td style="text-align:center">包含Core Animation接口</td>
+</tr>
+<tr>
+<td style="text-align:center">QuickLook.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">包含预览文件接口</td>
+</tr>
+<tr>
+<td style="text-align:center">SafariService.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">在您的应用中启用网络视图和服务</td>
+</tr>
+<tr>
+<td style="text-align:center">Security.framework</td>
+<td style="text-align:center">Core OS</td>
+<td style="text-align:center">包含管理证书、公钥私钥以及信任策略的接口</td>
+</tr>
+<tr>
+<td style="text-align:center">Social</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">社会化分享</td>
+</tr>
+<tr>
+<td style="text-align:center">SpriteKit.framework</td>
+<td style="text-align:center">Media</td>
+<td style="text-align:center">为您的应用添加具有流畅动画的高性能2D内容，或使用高级2D游戏工具创建游戏</td>
+</tr>
+<tr>
+<td style="text-align:center">StoreKit.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">包含用于处理与应用程序内购买相关的财务交易</td>
+</tr>
+<tr>
+<td style="text-align:center">System.framework</td>
+<td style="text-align:center">Core OS</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">SystemConfiguration.framework</td>
+<td style="text-align:center">Core Services</td>
+<td style="text-align:center">包含用于处理设备网络配置的接口</td>
+</tr>
+<tr>
+<td style="text-align:center">UIKit.framework</td>
+<td style="text-align:center">Cocoa Touch</td>
+<td style="text-align:center">包含iOS应用程序用户界面层使用的类和方法</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p>END</p>
+<p>Author: lei-wen<br>FinishTime: 2019.04.10</p>
+
+            </div>
+        
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://lei-wen.cn/2019/04/10/iOS的主要框架介绍/" data-id="cjuikurxc000ax599nbmlyfc2" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://lei-wen.cn/2019/04/10/iOS的主要框架介绍/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://lei-wen.cn/2019/04/10/iOS的主要框架介绍/">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+    
+        <a href="/2019/03/29/常用Git命令/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">常用Git命令</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+</section>
+    
+
+
+
+
+<!-- baidu url auto push script -->
+<script type="text/javascript">
+    !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=window.location.href,o=document.referrer;if(!e.test(r)){var n="//api.share.baidu.com/s.gif";o?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var t=new Image;t.src=n}}(window);
+</script>     
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/04/10/iOS的主要框架介绍/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/15.jpg)" alt="iOS的主要框架介绍" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a></p>
+                            <p class="item-title"><a href="/2019/04/10/iOS的主要框架介绍/" class="title">iOS的主要框架介绍</a></p>
+                            <p class="item-date"><time datetime="2019-04-09T17:42:47.000Z" itemprop="datePublished">2019-04-10</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/03/29/常用Git命令/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/13.jpg)" alt="常用Git命令" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Git/">Git</a></p>
+                            <p class="item-title"><a href="/2019/03/29/常用Git命令/" class="title">常用Git命令</a></p>
+                            <p class="item-date"><time datetime="2019-03-28T17:53:18.000Z" itemprop="datePublished">2019-03-29</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/03/29/MleaksFinder-精准iOS内存泄漏检测工具/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/12.jpg)" alt="MLeaksFinder:精准iOS内存泄漏检测工具" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a></p>
+                            <p class="item-title"><a href="/2019/03/29/MleaksFinder-精准iOS内存泄漏检测工具/" class="title">MLeaksFinder:精准iOS内存泄漏检测工具</a></p>
+                            <p class="item-date"><time datetime="2019-03-28T17:20:43.000Z" itemprop="datePublished">2019-03-29</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/03/27/如何优化App的启动耗时？/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/11.jpg)" alt="如何优化App的启动耗时？" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a></p>
+                            <p class="item-title"><a href="/2019/03/27/如何优化App的启动耗时？/" class="title">如何优化App的启动耗时？</a></p>
+                            <p class="item-date"><time datetime="2019-03-27T13:21:00.000Z" itemprop="datePublished">2019-03-27</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/03/27/深入研究Block捕获外部变量和-block实现原理/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/10.jpg)" alt="深入研究Block捕获外部变量和__block实现原理" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/iOS/">iOS</a></p>
+                            <p class="item-title"><a href="/2019/03/27/深入研究Block捕获外部变量和-block实现原理/" class="title">深入研究Block捕获外部变量和__block实现原理</a></p>
+                            <p class="item-date"><time datetime="2019-03-27T11:04:19.000Z" itemprop="datePublished">2019-03-27</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Git/">Git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Hexo/">Hexo</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/代码块/">代码块</a><span class="category-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Block/">Block</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/">HTTP</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Memory/">Memory</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Objective-C/">Objective-C</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Request/">Request</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/View/">View</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存检测/">内存检测</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能优化/">性能优化</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/版本控制/">版本控制</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Block/" style="font-size: 10px;">Block</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/Memory/" style="font-size: 10px;">Memory</a> <a href="/tags/Objective-C/" style="font-size: 20px;">Objective-C</a> <a href="/tags/Request/" style="font-size: 10px;">Request</a> <a href="/tags/View/" style="font-size: 10px;">View</a> <a href="/tags/内存检测/" style="font-size: 10px;">内存检测</a> <a href="/tags/性能优化/" style="font-size: 15px;">性能优化</a> <a href="/tags/版本控制/" style="font-size: 10px;">版本控制</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2019 lei-wen<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/lei-wen">lei-wen</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'http://lei-wen.cn/2019/04/10/iOS的主要框架介绍/';
+        
+        this.page.identifier = 'iOS的主要框架介绍';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
